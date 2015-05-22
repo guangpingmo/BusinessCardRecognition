@@ -1,0 +1,39 @@
+<?xml version="1.0" standalone="no"?>
+
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg width="100%" height="100%" version="1.1"
+xmlns="http://www.w3.org/2000/svg">
+
+
+
+
+
+<rect x="100" y="100" width="74" height="74"
+style="fill:blue;stroke:pink;stroke-width:1;
+fill-opacity:0.1;stroke-opacity:0.5"/>
+
+<rect x="110" y="110" width="42" height="24"
+style="fill:white;stroke:black;stroke-width:1;
+fill-opacity:0.9;stroke-opacity:0.6"/>
+
+<rect x="116" y="118" width="42" height="24"
+style="fill:white;stroke:black;stroke-width:1;
+fill-opacity:0.9;stroke-opacity:0.6"/>
+
+<line x1="120" y1="124" x2="138" y2="124"
+style="stroke:green;stroke-width:2"/>
+
+<line x1="126" y1="130" x2="144" y2="130"
+style="stroke:green;stroke-width:2"/>
+
+<circle cx="144" cy="142" r="18" stroke="green"
+stroke-width="2" fill="white" stroke-opacity="0.3"/>
+
+<line x1="158" y1="156" x2="170" y2="168"
+style="stroke:green;stroke-width:4"/>
+
+<text id="TextElement" x="138" y="146" style="font-family:Verdana;font-size:8;stroke:green;stroke-width:1;stroke-opacity:0.7" > 识</text>
+
+</svg>
