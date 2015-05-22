@@ -1,6 +1,7 @@
 package com.stu.mgp.BussinessCardRecognition;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -71,10 +72,12 @@ public class MainActivity extends ActionBarActivity {
 	public void captureImageFromSdCard(View view) {
 
 		Log.d(TAG, "captureImageFromSdCard");
-		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-		intent.setType("image/*");
+		// Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		Intent intent = new Intent(Intent.ACTION_PICK,
+				android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+		// intent.setType("image/*");
 
-		//设置输出文本的文件名
+		// 设置输出文本的文件名
 		getImageNameFromDate();
 		startActivityForResult(intent, SELECT_FILE);
 	}
@@ -83,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
 		Log.d(TAG, "captureImageFromCamera");
 		Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
 
-		//设置拍照的图片文件名
+		// 设置拍照的图片文件名
 		getImageNameFromDate();
 		Uri fileUri = Uri.fromFile(ocrPicture);// 创建一个文件来保存拍摄的图片
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的图片名
@@ -92,7 +95,8 @@ public class MainActivity extends ActionBarActivity {
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d(TAG, "onActivityResult " + requestCode + " " + resultCode + " " + data);
+		Log.d(TAG, "onActivityResult " + requestCode + " " + resultCode + " "
+				+ data);
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode != Activity.RESULT_OK)
 			return;
@@ -102,6 +106,12 @@ public class MainActivity extends ActionBarActivity {
 		switch (requestCode) {
 		case TAKE_PICTURE:
 			imageFilePath = ocrPicture.getPath();
+			try {
+				ImageTool.rotate(imageFilePath, -90.0f, 80);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			Log.d(TAG, "TAKE_PICTURE " + imageFilePath);
 			break;
 		case SELECT_FILE: {
 			// 得到选择的文件路径名
@@ -112,6 +122,11 @@ public class MainActivity extends ActionBarActivity {
 			cur.moveToFirst();
 			imageFilePath = cur.getString(cur
 					.getColumnIndex(MediaStore.Images.Media.DATA));
+			ocrPicture = new File(imageFilePath);
+
+			
+			Log.d(TAG, "SELECT_File " + ocrPicture);
+
 		}
 			break;
 		}

@@ -1,7 +1,13 @@
 package com.stu.mgp.BussinessCardRecognition;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -17,7 +23,7 @@ public class DisplayActivity extends ActionBarActivity {
 
 	// 识别方式
 	public static String mLang = "eng";
-	public static String mMethod = "local";
+	public static String mMethod = "network";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +42,17 @@ public class DisplayActivity extends ActionBarActivity {
 		}
 
 		Log.d(MainActivity.TAG, imageUrl);
+		Log.d(MainActivity.TAG, mMethod + " " + mLang);
+		
 		mImageView.setImageURI(Uri.fromFile(new File(imageUrl)));
+		
+		
+		
+		
 
 	}
 
+	// method called when RadioButton is clicked
 	public void onRadioButtonClicked(View view) {
 		// Is the button now checked?
 		boolean checked = ((RadioButton) view).isChecked();
@@ -63,6 +76,63 @@ public class DisplayActivity extends ActionBarActivity {
 				mMethod = "network";
 			break;
 		}
+		
+		Log.d(MainActivity.TAG, "onRadioButtonClicked " + mMethod + " " + mLang);
 	}
+
+	// method called when RecognizeButton is clicked
+	public void onRecognizeButtonClicked(View view) {
+		Log.d(MainActivity.TAG, "DisplayActivity onRecognizeButtonClicked(View view)");
+		Intent results = new Intent(this, ResultsActivity.class);
+		startActivity(results);
+	}
+	
+	
+	/*
+	 * 参见OpenCV官方教程
+	 * http://docs.opencv.org/platforms/android/service/doc/BaseLoaderCallback.html
+	 * 加载OpenCV类库的回调函数和在Activity恢复时调用OpenCV类库
+	 */
+	
+	private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(this) {
+		   @Override
+		   public void onManagerConnected(int status) {
+		     switch (status) {
+		       case LoaderCallbackInterface.SUCCESS:
+		       {
+		          Log.d(MainActivity.TAG, "OpenCV loaded successfully");
+		          
+		          Log.d(MainActivity.TAG, "downsize and grayscale");
+			    	try {
+						File newFile = ImageTool.downsampleAndGray(MainActivity.ocrPicture.toString());
+						mImageView.setImageURI(Uri.fromFile(newFile));
+					} catch (IOException e) {
+						
+						e.printStackTrace();
+					}
+		         
+		       } break;
+		       default:
+		       {
+		          super.onManagerConnected(status);
+		       } break;
+		     }
+		   }
+		};
+
+		/** Call on every application resume **/
+		@Override
+		protected void onResume()
+		{
+		    Log.d(MainActivity.TAG, "Called onResume");
+		    super.onResume();
+
+		    Log.d(MainActivity.TAG, "Trying to load OpenCV library");
+		    if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_6, this, mOpenCVCallBack))
+		    {
+		        Log.e(MainActivity.TAG, "Cannot connect to OpenCV Manager");
+		    }
+		    
+		}
 
 }

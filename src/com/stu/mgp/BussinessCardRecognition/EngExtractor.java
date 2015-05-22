@@ -7,6 +7,7 @@ public class EngExtractor extends Extractor {
 
 	@Override
 	public void extract(String inputText) {
+		inputText = trimInfomation(inputText);
 		Pattern p;
 	    Matcher m;
 

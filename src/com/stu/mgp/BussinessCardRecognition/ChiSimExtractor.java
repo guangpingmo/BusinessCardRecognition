@@ -10,17 +10,18 @@ public class ChiSimExtractor extends Extractor {
 
 	@Override
 	public void extract(String inputText) {
+		inputText = trimInfomation(inputText);
 		Pattern p;
 		Matcher m;
 		String regexString;
 
 		/*
 		 * Æ¥ÅäÃû×Ö
-		 * ÅäÖÃÁ½µ½ËÄ¸ö×Ö·û,
-		 * Æ¥Åä:¹ù¾¸, Áîºü³å, Î÷ÃÅ´µÑ©
+		 * ÅäÖÃÁ½µ½Èı¸ö×Ö·û,
+		 * Æ¥Åä:¹ù¾¸, Áîºü³å
 		 */
 
-		regexString = "^[\u4e00-\u9fa5]{2,4}\\s*";
+		regexString = "^[\u4e00-\u9fa5]{2,3}\\s*";
 
 		p = Pattern.compile(regexString, Pattern.MULTILINE);
 		m = p.matcher(inputText);
@@ -35,6 +36,7 @@ public class ChiSimExtractor extends Extractor {
 		 *		guangpingmo@126.com
 		 */
 
+//		regexString = "([^ \n]+\\w* *@ *.+(\\..{2,4})+)$";
 		regexString = "([^ \n]+ *@ *.+(\\..{2,4})+)$";
 
 		p = Pattern.compile(regexString, Pattern.MULTILINE);
@@ -50,9 +52,9 @@ public class ChiSimExtractor extends Extractor {
 		 * 
 		 * 
 		 */
-		regexString = "\\s*(\\d{13})\\s*";
+		regexString = ".*(\\d{11})\\s*";
 		
-		p = Pattern.compile(regexString, Pattern.MULTILINE);
+		p = Pattern.compile(regexString);
 		m = p.matcher(inputText);
 
 		if (m.find()) {

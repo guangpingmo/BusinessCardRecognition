@@ -8,8 +8,8 @@
         android:id="@+id/cardView"
         android:layout_width="fill_parent"
         android:layout_height="400dp"
-        android:padding="5dp"
-        android:scaleType="centerInside"
+        android:padding="10dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/card1" />
 
     <LinearLayout
@@ -105,10 +105,11 @@
         android:padding="4dp" >
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/recognizeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:onClick="onRecognizeButtonClicked"
             android:text="识别" />
     </RelativeLayout>
 

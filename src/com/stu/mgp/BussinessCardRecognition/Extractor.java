@@ -4,9 +4,9 @@ public  class Extractor {
 	
 	public static String TAG = "Extractor";
 	
-	String name;
-	String phoneNumber;
-	String email;
+	public String name;
+	public String phoneNumber;
+	public String email;
 	
 	static Extractor engExtractor = new EngExtractor();
 	static Extractor chiSimExtractor = new ChiSimExtractor();
@@ -15,11 +15,11 @@ public  class Extractor {
 	{
 		if(lang == "eng")
 		{
-			return engExtractor;
+			return engExtractor.reset();
 		}
 		else
 		{
-			return chiSimExtractor;
+			return chiSimExtractor.reset();
 		}
 	}
 	
@@ -47,5 +47,32 @@ public  class Extractor {
 		String result = "name: " + name + " email: " + email + " phoneNumber: " + phoneNumber;
 		return result;
 	}
-
+	
+	//解析不出的字段赋值为空字符串
+	public void normalize()
+	{
+		if(name == null)
+		{
+			name = "";
+		}
+		if(phoneNumber == null)
+		{
+			phoneNumber = "";
+		}
+		if(email == null)
+		{
+			email = "";
+		}
+	}
+	
+	//重置各个字段为null
+	public Extractor reset()
+	{
+		name = null;
+		phoneNumber = null;
+		email = null;
+		
+		return this;
+	}
+	
 }
