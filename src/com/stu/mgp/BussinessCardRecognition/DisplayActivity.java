@@ -51,6 +51,20 @@ public class DisplayActivity extends ActionBarActivity {
 		
 
 	}
+	
+	//turn the image to grayscale
+	public void turnImageToGray()
+	{
+		Log.d(MainActivity.TAG, "downsize and grayscale");
+    	try {
+			File newFile = ImageTool.downsampleAndGray(MainActivity.ocrPicture.toString());
+			MainActivity.ocrPicture = newFile;
+			mImageView.setImageURI(Uri.fromFile(newFile));
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+	}
 
 	// method called when RadioButton is clicked
 	public void onRadioButtonClicked(View view) {
@@ -88,52 +102,6 @@ public class DisplayActivity extends ActionBarActivity {
 	}
 	
 	
-	/*
-	 * 参见OpenCV官方教程
-	 * http://docs.opencv.org/platforms/android/service/doc/BaseLoaderCallback.html
-	 * 加载OpenCV类库的回调函数和在Activity恢复时调用OpenCV类库
-	 */
 	
-	private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(this) {
-		   @Override
-		   public void onManagerConnected(int status) {
-		     switch (status) {
-		       case LoaderCallbackInterface.SUCCESS:
-		       {
-		          Log.d(MainActivity.TAG, "OpenCV loaded successfully");
-		          
-		          Log.d(MainActivity.TAG, "downsize and grayscale");
-			    	try {
-						File newFile = ImageTool.downsampleAndGray(MainActivity.ocrPicture.toString());
-						MainActivity.ocrPicture = newFile;
-						mImageView.setImageURI(Uri.fromFile(newFile));
-					} catch (IOException e) {
-						
-						e.printStackTrace();
-					}
-		         
-		       } break;
-		       default:
-		       {
-		          super.onManagerConnected(status);
-		       } break;
-		     }
-		   }
-		};
-
-		/** Call on every application resume **/
-		@Override
-		protected void onResume()
-		{
-		    Log.d(MainActivity.TAG, "Called onResume");
-		    super.onResume();
-
-		    Log.d(MainActivity.TAG, "Trying to load OpenCV library");
-		    if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_6, this, mOpenCVCallBack))
-		    {
-		        Log.e(MainActivity.TAG, "Cannot connect to OpenCV Manager");
-		    }
-		    
-		}
 
 }

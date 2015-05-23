@@ -8,6 +8,10 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -36,15 +40,13 @@ public class MainActivity extends ActionBarActivity {
 	public static File ocrPicture = null;
 	public static File ocrText = null;
 
-	// 识别方式
-	private String mLang = "eng";
-	private String mMethod = "local";
+	
 
 	//
 	private final int TAKE_PICTURE = 0;
 	private final int SELECT_FILE = 1;
 
-	private TextView tv;
+	
 
 	// 创建App的目录结构
 	private void createAppDir() {
@@ -149,7 +151,7 @@ public class MainActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		tv = (TextView) findViewById(R.id.textView1);
+		
 
 		createAppDir();
 
@@ -174,37 +176,47 @@ public class MainActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void onRadioButtonClicked(View view) {
-		// Is the button now checked?
-		boolean checked = ((RadioButton) view).isChecked();
+	
+	
+	/*
+	 * 参见OpenCV官方教程
+	 * http://docs.opencv.org/platforms/android/service/doc/BaseLoaderCallback.html
+	 * 加载OpenCV类库的回调函数和在Activity恢复时调用OpenCV类库
+	 */
+	
+	private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(this) {
+		   @Override
+		   public void onManagerConnected(int status) {
+		     switch (status) {
+		       case LoaderCallbackInterface.SUCCESS:
+		       {
+		          Log.d(MainActivity.TAG, "OpenCV loaded successfully");
+		          
+		          
+		         
+		       } break;
+		       default:
+		       {
+		          super.onManagerConnected(status);
+		       } break;
+		     }
+		   }
+		};
 
-		// Check which radio button was clicked
-		switch (view.getId()) {
-		case R.id.eng:
-			if (checked)
-				mLang = "eng";
-			break;
-		case R.id.chi:
-			if (checked)
-				mLang = "chi_sim";
-			break;
-		case R.id.local:
-			if (checked)
-				mMethod = "local";
-			break;
-		case R.id.network:
-			if (checked)
-				mMethod = "network";
-			break;
+		/** Call on every application resume **/
+		@Override
+		protected void onResume()
+		{
+		    Log.d(MainActivity.TAG, "Called onResume");
+		    super.onResume();
+
+		    Log.d(MainActivity.TAG, "Trying to load OpenCV library");
+		    if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_6, this, mOpenCVCallBack))
+		    {
+		        Log.e(MainActivity.TAG, "Cannot connect to OpenCV Manager");
+		    }
+		    
 		}
-
-		reflesh();
-	}
-
-	private void reflesh() {
-
-		tv.setText(mLang + "  " + mMethod);
-	}
 
 	// 复制assets下面Tersseract的资源到手机的存储卡中
 	private void initTersseractData() {
