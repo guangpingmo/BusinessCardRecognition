@@ -175,7 +175,11 @@ JNIEXPORT void JNICALL Java_com_stu_mgp_BussinessCardRecognition_ImageTool_Recti
 			jlong addr_outRectImg,
 			jlong addr_outImg_gray,
 			jlong addr_outImg_binarized,
-			jlong addr_textRoi)
+			jlong addr_textRoi,
+			jlong addr_outImg_pyrDown,
+			jlong addr_outImg_pyrDown_gray_cvtColor,
+			jlong addr_outImg_detectedEdges_Canny,
+			jlong addr_outImg_detectedEdges_dilate)
 {
 	// convert to OpenCV Mat
 	Mat& inImg  = *(Mat*)addr_inImg;
@@ -183,6 +187,12 @@ JNIEXPORT void JNICALL Java_com_stu_mgp_BussinessCardRecognition_ImageTool_Recti
 	Mat& outImg_gray = *(Mat*)addr_outImg_gray;
 	Mat& outImg_binarized = *(Mat*)addr_outImg_binarized;
 	Mat& textRoi = *(Mat*)addr_textRoi;
+
+	// µ÷ÊÔÊä³ö
+	Mat& outImg_pyrDown = *(Mat*)addr_outImg_pyrDown;
+	Mat& outImg_pyrDown_gray_cvtColor = *(Mat*)addr_outImg_pyrDown_gray_cvtColor;
+	Mat& outImg_detectedEdges_Canny = *(Mat*)addr_outImg_detectedEdges_Canny;
+	Mat& outImg_detectedEdges_dilate = *(Mat*)addr_outImg_detectedEdges_dilate;
 
 	Mat img = inImg.clone();
 	outImg = Mat(inImg.size(), CV_8UC3);
@@ -194,16 +204,19 @@ JNIEXPORT void JNICALL Java_com_stu_mgp_BussinessCardRecognition_ImageTool_Recti
 
 	// downsize the image for processing
 	pyrDown( img, img );
+	outImg_pyrDown = img.clone();
 
 
 	// -------------- find edges --------------- //
 	// convert to grayscale
 	Mat imgGray;
 	cvtColor(img, imgGray, CV_BGR2GRAY);
+	outImg_pyrDown_gray_cvtColor = imgGray.clone();
 
 	// get the edge map
 	Mat detectedEdges = imgGray.clone();
 	Canny( detectedEdges, detectedEdges, 20, 80, 3 );
+	outImg_detectedEdges_Canny = detectedEdges.clone();
 
 #ifdef DEBUG_MODE
 	imshow("Edges_orig", detectedEdges);
@@ -211,6 +224,7 @@ JNIEXPORT void JNICALL Java_com_stu_mgp_BussinessCardRecognition_ImageTool_Recti
 
 	// ---- find the corners of the card ----- //
 	cv::dilate( detectedEdges, detectedEdges, Mat::ones(3,3,CV_8UC1) );
+	outImg_detectedEdges_dilate = detectedEdges.clone();
 #ifdef DEBUG_MODE
 	imshow("Edges", detectedEdges);
 	Mat cdst = img.clone();

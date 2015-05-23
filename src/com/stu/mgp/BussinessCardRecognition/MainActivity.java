@@ -36,6 +36,8 @@ public class MainActivity extends ActionBarActivity {
 			Environment.getExternalStorageDirectory(), "名片识别");
 	public static File appOcrPicturePath = new File(appBasePath, "图片");
 	public static File appOcrTextPath = new File(appBasePath, "文本");
+	public static File appImagePreprocessPath = new File(appBasePath, "预处理");
+	public static String dateOfRecognition = "";
 
 	public static File ocrPicture = null;
 	public static File ocrText = null;
@@ -61,6 +63,9 @@ public class MainActivity extends ActionBarActivity {
 		if (!appOcrTextPath.exists()) {
 			appOcrTextPath.mkdir();
 		}
+		if (!appImagePreprocessPath.exists()) {
+			appImagePreprocessPath.mkdir();
+		}
 		
 		//复制Tersseract的数据
 		initTersseractData();
@@ -72,6 +77,7 @@ public class MainActivity extends ActionBarActivity {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd-HHmmss"); // 时间格式模板
 		Date curDate = new Date(System.currentTimeMillis());// 获取当前时间
 		String str = formatter.format(curDate); // 时间的格式化
+		dateOfRecognition = str;
 
 		ocrPicture = new File(appOcrPicturePath, str + ".jpg");
 		ocrText = new File(appOcrTextPath, str + ".txt");

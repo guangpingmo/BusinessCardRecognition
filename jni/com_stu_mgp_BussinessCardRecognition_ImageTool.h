@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (JJJJJ)V
  */
 JNIEXPORT void JNICALL Java_com_stu_mgp_BussinessCardRecognition_ImageTool_RectifyCard
-  (JNIEnv *, jclass, jlong, jlong, jlong, jlong, jlong);
+  (JNIEnv *, jclass, jlong, jlong, jlong, jlong, jlong, jlong, jlong, jlong, jlong);
 
 #ifdef __cplusplus
 }
