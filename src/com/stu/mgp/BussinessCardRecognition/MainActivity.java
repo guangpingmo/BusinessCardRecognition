@@ -138,7 +138,9 @@ public class MainActivity extends ActionBarActivity {
 			cur.moveToFirst();
 			imageFilePath = cur.getString(cur
 					.getColumnIndex(MediaStore.Images.Media.DATA));
-			ocrPicture = new File(imageFilePath);
+//			ocrPicture = new File(imageFilePath);
+			//复制选择的文件到新的文件名
+			ImageTool.copyFile(new File(imageFilePath), ocrPicture);
 
 			Log.d(TAG, "SELECT_File " + ocrPicture);
 
