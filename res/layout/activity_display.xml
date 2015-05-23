@@ -108,9 +108,17 @@
             android:id="@+id/recognizeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_alignParentRight="true"
             android:onClick="onRecognizeButtonClicked"
             android:text="识别" />
+        
+        <Button
+            android:id="@+id/rectifyButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:onClick="rectify"
+            android:text="预处理" />
     </RelativeLayout>
 
 </LinearLayout>

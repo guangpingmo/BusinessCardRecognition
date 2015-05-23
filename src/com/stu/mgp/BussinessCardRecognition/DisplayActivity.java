@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 public class DisplayActivity extends ActionBarActivity {
 
@@ -43,27 +44,35 @@ public class DisplayActivity extends ActionBarActivity {
 
 		Log.d(MainActivity.TAG, imageUrl);
 		Log.d(MainActivity.TAG, mMethod + " " + mLang);
-		
+
 		mImageView.setImageURI(Uri.fromFile(new File(imageUrl)));
-		
-		
 		
 		
 
 	}
-	
-	//turn the image to grayscale
-	public void turnImageToGray()
-	{
+
+	// turn the image to grayscale
+	public void turnImageToGray() {
 		Log.d(MainActivity.TAG, "downsize and grayscale");
-    	try {
-			File newFile = ImageTool.downsampleAndGray(MainActivity.ocrPicture.toString());
+		try {
+			File newFile = ImageTool.downsampleAndGray(MainActivity.ocrPicture
+					.toString());
 			MainActivity.ocrPicture = newFile;
 			mImageView.setImageURI(Uri.fromFile(newFile));
 		} catch (IOException e) {
-			
+
 			e.printStackTrace();
 		}
+	}
+
+	// preprocessing the image , rectify the image
+	public void rectify(View view) {
+		Toast.makeText(this, "¶ÔÕý", Toast.LENGTH_LONG).show();
+		
+		Log.d(MainActivity.TAG, "rectify");
+		ImageTool.rectify();
+		mImageView.setImageURI(Uri.fromFile(MainActivity.ocrPicture));
+
 	}
 
 	// method called when RadioButton is clicked
@@ -90,18 +99,16 @@ public class DisplayActivity extends ActionBarActivity {
 				mMethod = "network";
 			break;
 		}
-		
+
 		Log.d(MainActivity.TAG, "onRadioButtonClicked " + mMethod + " " + mLang);
 	}
 
 	// method called when RecognizeButton is clicked
 	public void onRecognizeButtonClicked(View view) {
-		Log.d(MainActivity.TAG, "DisplayActivity onRecognizeButtonClicked(View view)");
+		Log.d(MainActivity.TAG,
+				"DisplayActivity onRecognizeButtonClicked(View view)");
 		Intent results = new Intent(this, ResultsActivity.class);
 		startActivity(results);
 	}
-	
-	
-	
 
 }

@@ -192,6 +192,10 @@ public class MainActivity extends ActionBarActivity {
 		       {
 		          Log.d(MainActivity.TAG, "OpenCV loaded successfully");
 		          
+		          //在OpenCV初始化成功后加载本地类库
+		          //Load native library after(!) OpenCV initialization
+                  System.loadLibrary("cardreader");
+                  Log.d(TAG, "Native library loaded successfully");
 		          
 		         
 		       } break;
@@ -204,6 +208,7 @@ public class MainActivity extends ActionBarActivity {
 		};
 
 		/** Call on every application resume **/
+		//加载OpenCV类库
 		@Override
 		protected void onResume()
 		{
