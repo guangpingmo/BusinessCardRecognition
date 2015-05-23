@@ -105,6 +105,7 @@ public class DisplayActivity extends ActionBarActivity {
 		          Log.d(MainActivity.TAG, "downsize and grayscale");
 			    	try {
 						File newFile = ImageTool.downsampleAndGray(MainActivity.ocrPicture.toString());
+						MainActivity.ocrPicture = newFile;
 						mImageView.setImageURI(Uri.fromFile(newFile));
 					} catch (IOException e) {
 						

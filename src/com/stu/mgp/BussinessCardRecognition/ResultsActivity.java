@@ -16,7 +16,7 @@ import android.widget.EditText;
 
 public class ResultsActivity extends ActionBarActivity {
 
-	EditText resultEditText;
+	public static EditText resultEditText;
 	Button addContactButton;
 
 	@Override
@@ -64,7 +64,7 @@ public class ResultsActivity extends ActionBarActivity {
 		resultEditText.setText(text);
 	}
 
-	// Button listener for
+	// Button listener for addContact
 	public void onAddContactClicked(View view) {
 		Log.d(MainActivity.TAG, "onAddContactClicked");
 		String inputText = resultEditText.getText().toString();

@@ -56,4 +56,12 @@ public class ImageTool {
 		return newFile;
 		
 	}
+	
+	public static native void RectifyCard(
+			long addr_inImg,
+			long addr_outImg_rectified,
+			long addr_outImg_gray,
+			long addr_outImg_binarized,
+			long addr_addTextRoi);
+
 }

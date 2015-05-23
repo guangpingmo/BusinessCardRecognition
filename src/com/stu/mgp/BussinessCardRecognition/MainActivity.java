@@ -1,12 +1,16 @@
 package com.stu.mgp.BussinessCardRecognition;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,10 +28,10 @@ public class MainActivity extends ActionBarActivity {
 
 	public static String TAG = "BusinessCardRecognition";
 	// App的目录结构
-	public File appBasePath = new File(
+	public static File appBasePath = new File(
 			Environment.getExternalStorageDirectory(), "名片识别");
-	public File appOcrPicturePath = new File(appBasePath, "图片");
-	public File appOcrTextPath = new File(appBasePath, "文本");
+	public static File appOcrPicturePath = new File(appBasePath, "图片");
+	public static File appOcrTextPath = new File(appBasePath, "文本");
 
 	public static File ocrPicture = null;
 	public static File ocrText = null;
@@ -45,6 +49,7 @@ public class MainActivity extends ActionBarActivity {
 	// 创建App的目录结构
 	private void createAppDir() {
 
+		Log.d(TAG, "createAppDir");
 		if (!appBasePath.exists()) {
 			appBasePath.mkdir();
 		}
@@ -54,6 +59,9 @@ public class MainActivity extends ActionBarActivity {
 		if (!appOcrTextPath.exists()) {
 			appOcrTextPath.mkdir();
 		}
+		
+		//复制Tersseract的数据
+		initTersseractData();
 	}
 
 	// 获取拍照名片的时间来命名图片, 输出的文本名, 格式如: 150521-215633.jpg, 150521-215633.txt
@@ -124,7 +132,6 @@ public class MainActivity extends ActionBarActivity {
 					.getColumnIndex(MediaStore.Images.Media.DATA));
 			ocrPicture = new File(imageFilePath);
 
-			
 			Log.d(TAG, "SELECT_File " + ocrPicture);
 
 		}
@@ -197,5 +204,53 @@ public class MainActivity extends ActionBarActivity {
 	private void reflesh() {
 
 		tv.setText(mLang + "  " + mMethod);
+	}
+
+	// 复制assets下面Tersseract的资源到手机的存储卡中
+	private void initTersseractData() {
+		Log.d(TAG, "initTersseractData");
+		File tessdataPath = new File(MainActivity.appBasePath, "tessdata");
+		if (tessdataPath.exists()) {
+			return;
+		}
+		tessdataPath.mkdir();
+		AssetManager assetManager = getAssets();
+		
+		try {
+			for(String file: assetManager.list("tessdata"))
+			{
+				file = "tessdata/" + file;
+				Log.d(TAG, "copying " + file);
+				copyFromAssets(file, appBasePath.toString());
+			}
+		} catch (IOException e) {
+			Log.d(TAG, "initTersseractData Error");
+			e.printStackTrace();
+		}
+	}
+	
+	private void copyFromAssets(String srcFile, String dstDir)
+	{
+		File outFile = new File(dstDir, srcFile);
+		try {
+			
+			AssetManager assetManager = getAssets();
+			InputStream in = assetManager.open(srcFile);
+			OutputStream out = new FileOutputStream(outFile);
+					
+
+			// 复制所有字节
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = in.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+			in.close();
+			out.close();
+			
+			Log.d(TAG, "Copied " + srcFile);
+		} catch (IOException e) {
+			Log.d(TAG, "Was unable to copy " + srcFile);
+		}
 	}
 }
