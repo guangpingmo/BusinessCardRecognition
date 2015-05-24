@@ -13,6 +13,8 @@ import com.abbyy.ocrsdk.Client;
 import com.abbyy.ocrsdk.ProcessingSettings;
 import com.abbyy.ocrsdk.Task;
 
+
+//参考abbyy Cloud Ocr接入的Demo
 public class AsyncProcessTask extends AsyncTask<String, String, Boolean> {
 	
 	public static String TAG = "Task";

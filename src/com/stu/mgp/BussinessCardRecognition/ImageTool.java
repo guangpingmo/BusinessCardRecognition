@@ -9,6 +9,9 @@ import java.io.OutputStream;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 import android.graphics.Bitmap;
@@ -20,20 +23,122 @@ import android.util.Log;
 
 public class ImageTool {
 	// 打开一个文件, 旋转一定的角度, 然后保存
-	public static void rotate(String file, float degree, int quality)
+	// 参见http://blog.csdn.net/a_asinceo/article/details/7960773,
+	// 解决Bitmap占用内存过大的原因
+	// public static void rotate(String file, float degree, int quality)
+	// throws IOException {
+	// Log.d(MainActivity.TAG, "rotate");
+	// Bitmap bitmap = null;
+	// try
+	// {
+	// bitmap = BitmapFactory.decodeFile(file);
+	// }
+	// catch(OutOfMemoryError e)
+	// {
+	// Log.e(MainActivity.TAG, "ImageTool.rotate out of memory");
+	// }
+	// if(bitmap == null)
+	// {
+	// return;
+	// }
+	// Matrix aMatrix = new Matrix();
+	// aMatrix.setRotate(degree);
+	//
+	// Bitmap dstBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+	// bitmap.getHeight(), aMatrix, true);
+	//
+	// FileOutputStream outputStream = new FileOutputStream(file);
+	// dstBitmap.compress(CompressFormat.JPEG, quality, outputStream);
+	// outputStream.close();
+	//
+	// //回收所有的bitmap的C++部分分配的内存
+	// bitmap.recycle();
+	// dstBitmap.recycle();
+	//
+	// }
+	// 旋转图片
+	// 逆时针为正
+	public static void rotate(String file, double angle, int quality)
 			throws IOException {
-		Bitmap bitmap = BitmapFactory.decodeFile(file);
-		Matrix aMatrix = new Matrix();
-		aMatrix.setRotate(degree);
+		Log.d(MainActivity.TAG, "rotate");
+		Bitmap bitmap = null;
+		try {
+			bitmap = BitmapFactory.decodeFile(file);
+			Mat srcMat = new Mat();
+			Log.d(MainActivity.TAG, "srcMat size " + srcMat.cols() + " : "
+					+ srcMat.rows());
+			Utils.bitmapToMat(bitmap, srcMat);
+			bitmap.recycle();
+			Mat dstMat = rotateMat(srcMat, angle);
+			Log.d(MainActivity.TAG, "dstMat size " + dstMat.cols() + " : "
+					+ dstMat.rows());
+			File rotatedFile = saveMatToFile(dstMat, "rotated");
+			if (rotatedFile != null) {
+//				copyFile(rotatedFile, MainActivity.ocrPicture);
+				MainActivity.ocrPicture = rotatedFile;
+			}
 
-		Bitmap dstBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-				bitmap.getHeight(), aMatrix, true);
-
-		FileOutputStream outputStream = new FileOutputStream(file);
-		dstBitmap.compress(CompressFormat.JPEG, quality, outputStream);
-		outputStream.close();
+		} catch (OutOfMemoryError e) {
+			Log.e(MainActivity.TAG, "ImageTool.rotate out of memory");
+		}
 
 	}
+	
+	//利用得仿射变换来旋转图片
+
+	public static Mat rotateMat(Mat src, double angle) {
+		Point[] srcTri = new Point[3];
+		Point[] dstTri = new Point[3];
+
+		Mat warp_dst, warp_mat;
+
+		// / 设置目标图像长宽颠倒
+		warp_dst = Mat.zeros(src.cols(), src.rows(), src.type());
+
+		int width = src.cols() - 1;
+		int height = src.rows() - 1;
+
+		// / 设置源图像和目标图像上的三组点以计算仿射变换
+		srcTri[0] = new Point(0, 0);
+		srcTri[1] = new Point(width, 0);
+		srcTri[2] = new Point(0, height);
+
+		if (angle == 90) {
+			dstTri[0] = new Point(0, width);
+			dstTri[1] = new Point(0, 0);
+			dstTri[2] = new Point(height, width);
+		} else {
+			dstTri[0] = new Point(height, 0);
+			dstTri[1] = new Point(height, width);
+			dstTri[2] = new Point(0, 0);
+		}
+
+		// 求得仿射变换
+		MatOfPoint2f src1, dst;
+		src1 = new MatOfPoint2f();
+		dst = new MatOfPoint2f();
+		src1.fromArray(srcTri);
+		dst.fromArray(dstTri);
+		warp_mat = Imgproc.getAffineTransform(src1, dst);
+
+		// / 对源图像应用上面求得的仿射变换
+		Imgproc.warpAffine(src, warp_dst, warp_mat, warp_dst.size());
+		
+		return warp_dst;
+
+	}
+
+	// public static Mat rotateMat(Mat srcMat, double angle)
+	// {
+	//
+	// // Point center = new Point(srcMat.cols() / 2, srcMat.rows() / 2);
+	// Point center = new Point(0, 0);
+	// Mat tranformMat = Imgproc.getRotationMatrix2D(center, angle, 1.0);
+	// Mat dstMat = new Mat(srcMat.cols(), srcMat.rows(), srcMat.type());
+	// Imgproc.warpAffine(srcMat, dstMat, tranformMat, dstMat.size());
+	//
+	// return dstMat;
+	// }
 
 	public static File downsampleAndGray(String file) throws IOException {
 		File f = new File(file);
@@ -143,7 +248,7 @@ public class ImageTool {
 	}
 
 	// 把Mat保存为图像文件
-	private static void saveMatToFile(Mat mat, String filename) {
+	private static File saveMatToFile(Mat mat, String filename) {
 		int height = mat.rows();
 		int width = mat.cols();
 		Bitmap bitmap = Bitmap.createBitmap(width, height,
@@ -155,18 +260,18 @@ public class ImageTool {
 			FileOutputStream out = new FileOutputStream(file);
 			bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
 			out.close();
+			return file;
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
-	
-	public static void copyFile(File srcFile, File dstFile)
-	{
-		try{
+
+	public static void copyFile(File srcFile, File dstFile) {
+		try {
 			InputStream in = new FileInputStream(srcFile);
 			OutputStream out = new FileOutputStream(dstFile);
-					
 
 			// 复制所有字节
 			byte[] buf = new byte[1024];
@@ -176,12 +281,13 @@ public class ImageTool {
 			}
 			in.close();
 			out.close();
-			
+
 			Log.d(MainActivity.TAG, "Copied " + srcFile);
 		} catch (IOException e) {
-			Log.d(MainActivity.TAG, "unable to copy " + srcFile + " to " + dstFile);
+			Log.d(MainActivity.TAG, "unable to copy " + srcFile + " to "
+					+ dstFile);
 		}
-		
+
 	}
 
 }

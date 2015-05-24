@@ -39,8 +39,9 @@ public class MainActivity extends ActionBarActivity {
 	public static File appImagePreprocessPath = new File(appBasePath, "预处理");
 	public static String dateOfRecognition = "";
 
-	public static File ocrPicture = null;
-	public static File ocrText = null;
+	public static File ocrPicture = null; //正在识别的图片
+	public static File ocrText = null; //云端Ocr识别出的文本文件
+	public static File ocrTextLocal = null;  //本地Ocr识别出来的文本文件
 
 	
 
@@ -81,6 +82,7 @@ public class MainActivity extends ActionBarActivity {
 
 		ocrPicture = new File(appOcrPicturePath, str + ".jpg");
 		ocrText = new File(appOcrTextPath, str + ".txt");
+		ocrTextLocal = new File(appOcrTextPath, str + "-local.txt");
 
 		return str;
 	}
@@ -123,7 +125,8 @@ public class MainActivity extends ActionBarActivity {
 		case TAKE_PICTURE:
 			imageFilePath = ocrPicture.getPath();
 			try {
-				ImageTool.rotate(imageFilePath, -90.0f, 80);
+				//逆时针旋转90度
+				ImageTool.rotate(imageFilePath, 90, 80);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

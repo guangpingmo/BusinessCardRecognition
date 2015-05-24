@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -45,8 +47,7 @@ public class DisplayActivity extends ActionBarActivity {
 		Log.d(MainActivity.TAG, imageUrl);
 		Log.d(MainActivity.TAG, mMethod + " " + mLang);
 
-		mImageView.setImageURI(Uri.fromFile(new File(imageUrl)));
-		
+		mImageView.setImageURI(Uri.fromFile(MainActivity.ocrPicture));
 		
 
 	}
@@ -68,7 +69,7 @@ public class DisplayActivity extends ActionBarActivity {
 	// preprocessing the image , rectify the image
 	public void rectify(View view) {
 		Toast.makeText(this, "¶ÔÕý", Toast.LENGTH_LONG).show();
-		
+
 		Log.d(MainActivity.TAG, "rectify");
 		ImageTool.rectify();
 		mImageView.setImageURI(Uri.fromFile(MainActivity.ocrPicture));
@@ -109,6 +110,46 @@ public class DisplayActivity extends ActionBarActivity {
 				"DisplayActivity onRecognizeButtonClicked(View view)");
 		Intent results = new Intent(this, ResultsActivity.class);
 		startActivity(results);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.display, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.rotateAntiClockwise:
+			Toast.makeText(this, "antiClockWise", Toast.LENGTH_LONG).show();
+			try {
+				ImageTool.rotate(MainActivity.ocrPicture.getPath(), 90, 50);
+				mImageView.setImageURI(Uri.fromFile(MainActivity.ocrPicture));
+				mImageView.invalidate(); //Ë¢ÐÂÍ¼Æ¬
+				mImageView.refreshDrawableState();
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+			}
+			break;
+		case R.id.rotateClockwise:
+			Toast.makeText(this, "ClockWise", Toast.LENGTH_LONG).show();
+			try {
+				ImageTool.rotate(MainActivity.ocrPicture.getPath(), -90, 50);
+				
+				mImageView.setImageURI(Uri.fromFile(MainActivity.ocrPicture));
+				mImageView.invalidate();
+				mImageView.refreshDrawableState();
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+			}
+			break;
+		default:
+			break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 }

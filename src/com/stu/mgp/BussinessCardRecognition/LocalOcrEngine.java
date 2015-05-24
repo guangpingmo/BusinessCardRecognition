@@ -1,5 +1,10 @@
 package com.stu.mgp.BussinessCardRecognition;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.Writer;
+import java.nio.charset.Charset;
+
 import android.util.Log;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -41,7 +46,21 @@ public class LocalOcrEngine extends OcrEngine {
 		
 		Log.d(MainActivity.TAG, "recognize result " + result);
 		currentActivity.resultEditText.setText(result);
-
+		savaTextToFile(result, MainActivity.ocrTextLocal);
 		
+	}
+	
+	public static void savaTextToFile(String text, File f)
+	{
+		try
+		{
+			FileOutputStream fileOutputStream = new FileOutputStream(f);
+			fileOutputStream.write(text.getBytes(Charset.forName("utf-8")));
+			fileOutputStream.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
