@@ -24,11 +24,14 @@ public class LocalOcrEngine extends OcrEngine {
 	public void setLanguage(String lang) {
 		if (lang == "eng") {
 			this.language = "eng";
-		} else {
-			//中文时会设置两种语言, 因为电子邮件是英文字母
+		} else if (lang == "chi_sim"){
+			// 中文时会设置两种语言, 因为电子邮件是英文字母
+			this.language = "chi_sim";
+		} else
+		{
 			this.language = "chi_sim+eng";
 		}
-		//设置Tesseract的识别语言
+		// 设置Tesseract的识别语言
 		baseApi.init(MainActivity.appBasePath.toString(), language);
 		baseApi.setDebug(true);
 	}
@@ -36,30 +39,25 @@ public class LocalOcrEngine extends OcrEngine {
 	@Override
 	public void recognize() {
 		/*
-		 * 参见 
-		 * https://github.com/rmtheis/tess-two
+		 * 参见 https://github.com/rmtheis/tess-two
 		 * https://github.com/tesseract-ocr/tesseract
 		 */
-		
+
 		baseApi.setImage(MainActivity.ocrPicture);
 		String result = baseApi.getUTF8Text();
-		
+
 		Log.d(MainActivity.TAG, "recognize result " + result);
 		currentActivity.resultEditText.setText(result);
 		savaTextToFile(result, MainActivity.ocrTextLocal);
-		
+
 	}
-	
-	public static void savaTextToFile(String text, File f)
-	{
-		try
-		{
+
+	public static void savaTextToFile(String text, File f) {
+		try {
 			FileOutputStream fileOutputStream = new FileOutputStream(f);
 			fileOutputStream.write(text.getBytes(Charset.forName("utf-8")));
 			fileOutputStream.close();
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {		
 			e.printStackTrace();
 		}
 	}

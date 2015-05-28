@@ -8,6 +8,8 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
 import android.content.Intent;
+import android.gesture.GestureOverlayView;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -24,10 +26,6 @@ public class DisplayActivity extends ActionBarActivity {
 	ImageView mImageView;
 	String outText;
 
-	// 识别方式
-	public static String mLang = "eng";
-	public static String mMethod = "network";
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -36,19 +34,12 @@ public class DisplayActivity extends ActionBarActivity {
 		// getSupportActionBar().hide();
 		mImageView = (ImageView) findViewById(R.id.cardView);
 
-		String imageUrl = "unknown";
+		// reflesh the GUI
+		refleshGUI();
 
-		Bundle extras = getIntent().getExtras();
-		if (extras != null) {
-			imageUrl = extras.getString("IMAGE_PATH");
-			outText = extras.getString("RESULT_PATH");
-		}
-
-		Log.d(MainActivity.TAG, imageUrl);
-		Log.d(MainActivity.TAG, mMethod + " " + mLang);
-
-		mImageView.setImageURI(Uri.fromFile(MainActivity.ocrPicture));
-		
+		// reflesh the content of mImageView
+		refleshImage();
+		Log.d(MainActivity.TAG, "Setting: " + Setting.getInstance().toString());
 
 	}
 
@@ -69,15 +60,48 @@ public class DisplayActivity extends ActionBarActivity {
 	// preprocessing the image , rectify the image
 	public void rectify(View view) {
 		Toast.makeText(this, "对正", Toast.LENGTH_LONG).show();
-
 		Log.d(MainActivity.TAG, "rectify");
-		ImageTool.rectify();
-		mImageView.setImageURI(Uri.fromFile(MainActivity.ocrPicture));
+		if (ImageTool.rectify()) {
+			MainActivity.ocrPicture = ImageTool
+					.getFileFromPreProcessPath("binary.jpg");
+			refleshImage();
+		} else {
+			Toast.makeText(this, "像素太低无法对正", Toast.LENGTH_LONG).show();
+		}
 
+	}
+
+	public void refleshGUI() {
+		switch (Setting.getInstance().language) {
+		case "eng":
+			((RadioButton) findViewById(R.id.eng)).setChecked(true);
+			break;
+		case "chi_sim":
+			((RadioButton) findViewById(R.id.chi)).setChecked(true);
+			break;
+		case "chi_sim+eng":
+			((RadioButton) findViewById(R.id.chiAndEng)).setChecked(true);
+			break;
+		default:
+			break;
+		}
+		switch (Setting.getInstance().method) {
+		case "local":
+			((RadioButton) findViewById(R.id.local)).setChecked(true);
+			break;
+		case "network":
+			((RadioButton) findViewById(R.id.network)).setChecked(true);
+			break;
+		default:
+			break;
+		}
 	}
 
 	// method called when RadioButton is clicked
 	public void onRadioButtonClicked(View view) {
+		// 识别方式
+		String mLang = Setting.getInstance().language;
+		String mMethod = Setting.getInstance().method;
 		// Is the button now checked?
 		boolean checked = ((RadioButton) view).isChecked();
 
@@ -91,6 +115,10 @@ public class DisplayActivity extends ActionBarActivity {
 			if (checked)
 				mLang = "chi_sim";
 			break;
+		case R.id.chiAndEng:
+			if (checked)
+				mLang = "chi_sim+eng";
+			break;
 		case R.id.local:
 			if (checked)
 				mMethod = "local";
@@ -100,6 +128,8 @@ public class DisplayActivity extends ActionBarActivity {
 				mMethod = "network";
 			break;
 		}
+		Setting.getInstance().language = mLang;
+		Setting.getInstance().method = mMethod;
 
 		Log.d(MainActivity.TAG, "onRadioButtonClicked " + mMethod + " " + mLang);
 	}
@@ -122,34 +152,62 @@ public class DisplayActivity extends ActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.rotateAntiClockwise:
-			Toast.makeText(this, "antiClockWise", Toast.LENGTH_LONG).show();
-			try {
-				ImageTool.rotate(MainActivity.ocrPicture.getPath(), 90, 50);
-				mImageView.setImageURI(Uri.fromFile(MainActivity.ocrPicture));
-				mImageView.invalidate(); //刷新图片
-				mImageView.refreshDrawableState();
-			} catch (IOException e) {
-				
-				e.printStackTrace();
-			}
+			Toast.makeText(this, "逆时针旋转90度", Toast.LENGTH_LONG).show();
+			toRotate(90);
 			break;
 		case R.id.rotateClockwise:
-			Toast.makeText(this, "ClockWise", Toast.LENGTH_LONG).show();
-			try {
-				ImageTool.rotate(MainActivity.ocrPicture.getPath(), -90, 50);
-				
-				mImageView.setImageURI(Uri.fromFile(MainActivity.ocrPicture));
-				mImageView.invalidate();
-				mImageView.refreshDrawableState();
-			} catch (IOException e) {
-				
-				e.printStackTrace();
-			}
+			Toast.makeText(this, "顺时针旋转90度", Toast.LENGTH_LONG).show();
+			toRotate(-90);
+			break;
+		case R.id.gray:
+			Toast.makeText(this, "灰度化", Toast.LENGTH_LONG).show();
+			toGray();
+			break;
+		case R.id.binary:
+			Toast.makeText(this, "二值化", Toast.LENGTH_LONG).show();
+			toBinarization();
 			break;
 		default:
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void toRotate(double angle) {
+		File dst = new File(MainActivity.appImagePreprocessPath,
+				MainActivity.dateOfRecognition + "-" + "toRotate.jpg");
+		dst = ImageTool.toRotate(MainActivity.ocrPicture, dst, angle, 80);
+		if (dst != null) {
+			MainActivity.ocrPicture = dst;
+			refleshImage();
+		}
+	}
+
+	private void toGray() {
+		File dst = new File(MainActivity.appImagePreprocessPath,
+				MainActivity.dateOfRecognition + "-" + "toGray.jpg");
+		dst = ImageTool.toGray(MainActivity.ocrPicture, dst);
+		if (dst != null) {
+			MainActivity.ocrPicture = dst;
+			refleshImage();
+		}
+	}
+
+	private void toBinarization() {
+		File dst = new File(MainActivity.appImagePreprocessPath,
+				MainActivity.dateOfRecognition + "-" + "toBinarization.jpg");
+		dst = ImageTool.toBinarization(MainActivity.ocrPicture, dst);
+		if (dst != null) {
+			MainActivity.ocrPicture = dst;
+			refleshImage();
+		}
+	}
+
+	// 刷新ImageView的内容
+	private void refleshImage() {
+		// mImageView.setImageURI(Uri.fromFile(MainActivity.ocrPicture));
+		mImageView.setImageBitmap(BitmapFactory
+				.decodeFile(MainActivity.ocrPicture.getPath()));
 	}
 
 }

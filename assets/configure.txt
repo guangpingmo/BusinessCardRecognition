@@ -1,0 +1,4 @@
+ocr.method=local
+ocr.language=eng
+abbyy.applicationId=MyStuBusinessCardRecognization
+abbyy.password=NsBR1MS65oG39WdOCqabjydU

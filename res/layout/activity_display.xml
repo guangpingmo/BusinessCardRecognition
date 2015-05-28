@@ -7,118 +7,127 @@
     <ImageView
         android:id="@+id/cardView"
         android:layout_width="fill_parent"
-        android:layout_height="400dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:padding="10dp"
         android:scaleType="fitCenter"
         android:src="@drawable/card1" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="1dp"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical" >
 
-        <RelativeLayout
-            android:id="@+id/first_row"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/lang_setting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                android:text="识别语言" />
+            <RelativeLayout
+                android:id="@+id/first_row"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
 
-            <RadioGroup
-                android:id="@+id/lang"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
-                android:layout_toRightOf="@id/lang_setting"
-                android:orientation="horizontal" >
-
-                <RadioButton
-                    android:id="@+id/chi"
+                <TextView
+                    android:id="@+id/lang_setting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onClick="onRadioButtonClicked"
-                    android:text="中文" />
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:text="识别语言" />
 
-                <RadioButton
-                    android:id="@+id/eng"
+                <RadioGroup
+                    android:id="@+id/lang"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:onClick="onRadioButtonClicked"
-                    android:text="英文" />
-            </RadioGroup>
-        </RelativeLayout>
+                    android:layout_marginLeft="4dp"
+                    android:layout_toRightOf="@id/lang_setting"
+                    android:orientation="horizontal" >
+
+                    <RadioButton
+                        android:id="@+id/chi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="onRadioButtonClicked"
+                        android:text="中文" />
+
+                    <RadioButton android:id="@+id/chiAndEng" android:layout_width="wrap_content" android:layout_height="wrap_content" android:onClick="onRadioButtonClicked" android:text="中文+英文" /><RadioButton
+                        android:id="@+id/eng"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:onClick="onRadioButtonClicked"
+                        android:text="英文" />
+                    
+                </RadioGroup>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/second_row"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp" >
+
+                <TextView
+                    android:id="@+id/method_setting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:text="识别方式" />
+
+                <RadioGroup
+                    android:id="@+id/method"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_toRightOf="@id/method_setting"
+                    android:orientation="horizontal" >
+
+                    <RadioButton
+                        android:id="@+id/local"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="onRadioButtonClicked"
+                        android:text="本地" />
+
+                    <RadioButton
+                        android:id="@+id/network"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:onClick="onRadioButtonClicked"
+                        android:text="联网" />
+                </RadioGroup>
+            </RelativeLayout>
+        </LinearLayout>
 
         <RelativeLayout
-            android:id="@+id/second_row"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp" >
+            android:layout_marginTop="4dp"
+            android:padding="4dp" >
 
-            <TextView
-                android:id="@+id/method_setting"
+            <Button
+                android:id="@+id/recognizeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:onClick="onRecognizeButtonClicked"
+                android:text="识别" />
+
+            <Button
+                android:id="@+id/rectifyButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                android:text="识别方式" />
-
-            <RadioGroup
-                android:id="@+id/method"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
-                android:layout_toRightOf="@id/method_setting"
-                android:orientation="horizontal" >
-
-                <RadioButton
-                    android:id="@+id/local"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="onRadioButtonClicked"
-                    android:text="本地" />
-
-                <RadioButton
-                    android:id="@+id/network"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:onClick="onRadioButtonClicked"
-                    android:text="联网" />
-            </RadioGroup>
+                android:onClick="rectify"
+                android:text="预处理" />
         </RelativeLayout>
     </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:padding="4dp" >
-
-        <Button
-            android:id="@+id/recognizeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:onClick="onRecognizeButtonClicked"
-            android:text="识别" />
-        
-        <Button
-            android:id="@+id/rectifyButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:onClick="rectify"
-            android:text="预处理" />
-    </RelativeLayout>
 
 </LinearLayout>

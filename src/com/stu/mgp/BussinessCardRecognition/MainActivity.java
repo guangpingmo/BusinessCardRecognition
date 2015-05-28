@@ -36,20 +36,18 @@ public class MainActivity extends ActionBarActivity {
 			Environment.getExternalStorageDirectory(), "名片识别");
 	public static File appOcrPicturePath = new File(appBasePath, "图片");
 	public static File appOcrTextPath = new File(appBasePath, "文本");
+	public static File appConfigPath = new File(appBasePath, "配置文件");
+	public static File appConfigFile = new File(appConfigPath, "configure.txt");
 	public static File appImagePreprocessPath = new File(appBasePath, "预处理");
 	public static String dateOfRecognition = "";
 
-	public static File ocrPicture = null; //正在识别的图片
-	public static File ocrText = null; //云端Ocr识别出的文本文件
-	public static File ocrTextLocal = null;  //本地Ocr识别出来的文本文件
+	public static File ocrPicture = null; // 正在识别的图片
+	public static File ocrText = null; // 云端Ocr识别出的文本文件
+	public static File ocrTextLocal = null; // 本地Ocr识别出来的文本文件
 
-	
-
-	//
+	// 请求代码
 	private final int TAKE_PICTURE = 0;
 	private final int SELECT_FILE = 1;
-
-	
 
 	// 创建App的目录结构
 	private void createAppDir() {
@@ -67,12 +65,15 @@ public class MainActivity extends ActionBarActivity {
 		if (!appImagePreprocessPath.exists()) {
 			appImagePreprocessPath.mkdir();
 		}
-		
-		//复制Tersseract的数据
+		if (!appConfigPath.exists()) {
+			appConfigPath.mkdir();
+		}
+
+		// 复制Tersseract的数据
 		initTersseractData();
 	}
 
-	// 获取拍照名片的时间来命名图片, 输出的文本名, 格式如: 150521-215633.jpg, 150521-215633.txt
+	// 获取拍照名片的时间来命名图片和输出的文本文本文件, 格式如: 150521-215633.jpg, 150521-215633.txt
 
 	private String getImageNameFromDate() {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd-HHmmss"); // 时间格式模板
@@ -87,6 +88,7 @@ public class MainActivity extends ActionBarActivity {
 		return str;
 	}
 
+	// 从手机中读取文件, "读取文件"按钮被点击时会调用这个方法
 	public void captureImageFromSdCard(View view) {
 
 		Log.d(TAG, "captureImageFromSdCard");
@@ -100,6 +102,7 @@ public class MainActivity extends ActionBarActivity {
 		startActivityForResult(intent, SELECT_FILE);
 	}
 
+	// 对名片进行拍照, "拍照"按钮被点击时会调用这个方法
 	public void captureImageFromCamera(View view) {
 		Log.d(TAG, "captureImageFromCamera");
 		Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
@@ -125,7 +128,7 @@ public class MainActivity extends ActionBarActivity {
 		case TAKE_PICTURE:
 			imageFilePath = ocrPicture.getPath();
 			try {
-				//逆时针旋转90度
+				// 默认逆时针旋转90度, 一半名片是横着拍的
 				ImageTool.rotate(imageFilePath, 90, 80);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -141,8 +144,8 @@ public class MainActivity extends ActionBarActivity {
 			cur.moveToFirst();
 			imageFilePath = cur.getString(cur
 					.getColumnIndex(MediaStore.Images.Media.DATA));
-//			ocrPicture = new File(imageFilePath);
-			//复制选择的文件到新的文件名
+			// ocrPicture = new File(imageFilePath);
+			// 复制选择的文件到新的文件名
 			ImageTool.copyFile(new File(imageFilePath), ocrPicture);
 
 			Log.d(TAG, "SELECT_File " + ocrPicture);
@@ -162,10 +165,9 @@ public class MainActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		
-
 		createAppDir();
-
+		Setting.getInstance().init(appConfigFile);
+		Log.d(TAG, "Setting: " + Setting.getInstance().toString());
 	}
 
 	@Override
@@ -186,67 +188,68 @@ public class MainActivity extends ActionBarActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+//
+//	
+//	  参见OpenCV官方教程
+//	 http://docs.opencv.org/platforms/android/service/doc/BaseLoaderCallb.html 
+//	  加载OpenCV类库的回调函数和在Activity恢复时调用OpenCV类库
+//	 
 
-	
-	
-	/*
-	 * 参见OpenCV官方教程
-	 * http://docs.opencv.org/platforms/android/service/doc/BaseLoaderCallback.html
-	 * 加载OpenCV类库的回调函数和在Activity恢复时调用OpenCV类库
-	 */
-	
 	private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(this) {
-		   @Override
-		   public void onManagerConnected(int status) {
-		     switch (status) {
-		       case LoaderCallbackInterface.SUCCESS:
-		       {
-		          Log.d(MainActivity.TAG, "OpenCV loaded successfully");
-		          
-		          //在OpenCV初始化成功后加载本地类库
-		          //Load native library after(!) OpenCV initialization
-                  System.loadLibrary("cardreader");
-                  Log.d(TAG, "Native library loaded successfully");
-		          
-		         
-		       } break;
-		       default:
-		       {
-		          super.onManagerConnected(status);
-		       } break;
-		     }
-		   }
-		};
-
-		/** Call on every application resume **/
-		//加载OpenCV类库
 		@Override
-		protected void onResume()
-		{
-		    Log.d(MainActivity.TAG, "Called onResume");
-		    super.onResume();
+		public void onManagerConnected(int status) {
+			switch (status) {
+			case LoaderCallbackInterface.SUCCESS: {
+				Log.d(MainActivity.TAG, "OpenCV loaded successfully");
 
-		    Log.d(MainActivity.TAG, "Trying to load OpenCV library");
-		    if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_6, this, mOpenCVCallBack))
-		    {
-		        Log.e(MainActivity.TAG, "Cannot connect to OpenCV Manager");
-		    }
-		    
+				// 在OpenCV初始化成功后加载本地类库
+				
+				System.loadLibrary("cardreader");
+				Log.d(TAG, "Native library loaded successfully");
+
+			}
+				break;
+			default: {
+				super.onManagerConnected(status);
+			}
+				break;
+			}
 		}
+	};
+
+	/** Call on every application resume **/
+	// 加载OpenCV类库
+	@Override
+	protected void onResume() {
+		Log.d(MainActivity.TAG, "Called onResume");
+		super.onResume();
+
+		Log.d(MainActivity.TAG, "Trying to load OpenCV library");
+		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_6, this,
+				mOpenCVCallBack)) {
+			Log.e(MainActivity.TAG, "Cannot connect to OpenCV Manager");
+		}
+
+	}
 
 	// 复制assets下面Tersseract的资源到手机的存储卡中
 	private void initTersseractData() {
 		Log.d(TAG, "initTersseractData");
 		File tessdataPath = new File(MainActivity.appBasePath, "tessdata");
+		AssetManager assetManager = getAssets();
+		
+		if(!appConfigFile.exists())
+		{
+			copyFromAssets("configure.txt", appConfigPath.toString());
+		}
 		if (tessdataPath.exists()) {
 			return;
 		}
 		tessdataPath.mkdir();
-		AssetManager assetManager = getAssets();
 		
+
 		try {
-			for(String file: assetManager.list("tessdata"))
-			{
+			for (String file : assetManager.list("tessdata")) {
 				file = "tessdata/" + file;
 				Log.d(TAG, "copying " + file);
 				copyFromAssets(file, appBasePath.toString());
@@ -256,16 +259,14 @@ public class MainActivity extends ActionBarActivity {
 			e.printStackTrace();
 		}
 	}
-	
-	private void copyFromAssets(String srcFile, String dstDir)
-	{
+
+	private void copyFromAssets(String srcFile, String dstDir) {
 		File outFile = new File(dstDir, srcFile);
 		try {
-			
+
 			AssetManager assetManager = getAssets();
 			InputStream in = assetManager.open(srcFile);
 			OutputStream out = new FileOutputStream(outFile);
-					
 
 			// 复制所有字节
 			byte[] buf = new byte[1024];
@@ -275,7 +276,7 @@ public class MainActivity extends ActionBarActivity {
 			}
 			in.close();
 			out.close();
-			
+
 			Log.d(TAG, "Copied " + srcFile);
 		} catch (IOException e) {
 			Log.d(TAG, "Was unable to copy " + srcFile);

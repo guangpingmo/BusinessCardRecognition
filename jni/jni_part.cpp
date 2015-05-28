@@ -19,7 +19,7 @@ JNIEXPORT void JNICALL Java_com_example_cardreader_MainActivity_RectifyCard(JNIE
 										jlong addr_addTextRoi);
 
 // uncomment this to view debug images on PC
-//#define DEBUG_MODE
+#define DEBUG_MODE
 
 
 //=================================================================================================

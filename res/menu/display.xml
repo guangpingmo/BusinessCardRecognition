@@ -2,17 +2,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/rotate"
-        android:showAsAction="always"
-        android:title="旋转...">
-        <menu>
-            <item
-                android:id="@+id/rotateAntiClockwise"
-                android:title="逆时针旋转90度"/>
-            <item
-                android:id="@+id/rotateClockwise"
-                android:title="顺时针旋转90度"/>
-        </menu>
+        android:id="@+id/rotateAntiClockwise"
+        android:showAsAction="ifRoom|withText"
+        android:title="逆时针旋转90度"/>
+    <item
+        android:id="@+id/rotateClockwise"
+        android:showAsAction="ifRoom|withText"
+        android:title="顺时针旋转90度"/>
+    <item
+        android:id="@+id/gray"
+        android:showAsAction="ifRoom|withText"
+        android:title="灰度化">
+    </item>
+    <item
+        android:id="@+id/binary"
+        android:showAsAction="ifRoom"
+        android:title="二值化">
+    </item>
+    <item
+        android:id="@+id/resetImage"
+        android:showAsAction="ifRoom"
+        android:title="重设">
     </item>
 
 </menu>

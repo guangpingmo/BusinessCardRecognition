@@ -27,8 +27,8 @@ public class ResultsActivity extends ActionBarActivity {
 		resultEditText = (EditText) findViewById(R.id.result);
 		addContactButton = (Button) findViewById(R.id.addContact);
 
-		OcrEngine.getOcrEngine(this, DisplayActivity.mMethod,
-				DisplayActivity.mLang).recognize();
+		OcrEngine.getOcrEngine(this, Setting.getInstance().method,
+				Setting.getInstance().language).recognize();
 
 	}
 
@@ -70,7 +70,7 @@ public class ResultsActivity extends ActionBarActivity {
 		String inputText = resultEditText.getText().toString();
 		Log.d(MainActivity.TAG, "inputText : " + inputText);
 		
-		Extractor extractor = Extractor.getExtractor(DisplayActivity.mLang);
+		Extractor extractor = Extractor.getExtractor(Setting.getInstance().language);
 		extractor.extract(inputText);
 		
 		Log.d(MainActivity.TAG, "outPutText : " + extractor.toString());

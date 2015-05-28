@@ -9,32 +9,16 @@ public class OcrEngine {
 	
 	public static OcrEngine getOcrEngine(ResultsActivity currentActivity, String method, String lang)
 	{
-		if(method == "local")
-		{
-//			if(localOcrEngine == null)
-//			{
-//				localOcrEngine = new LocalOcrEngine(currentActivity, lang);
-//			}
-//			else
-//			{
-//				localOcrEngine.setLanguage(lang);
-//			}
-			
-			Log.d(MainActivity.TAG, "getOcrEngine" + " local");
+		Log.d(MainActivity.TAG, "getOcrEngine " + method + " " + lang);
+		if(method.equalsIgnoreCase("local"))
+		{			
+			Log.d(MainActivity.TAG, "getOcrEngine" + " local" + " " + lang);
 			localOcrEngine = new LocalOcrEngine(currentActivity, lang);
 			return localOcrEngine;
 		}
 		else
 		{
-//			if(cloudOcrEngine == null)
-//			{
-//				cloudOcrEngine = new CloudOcrEngine(currentActivity, lang);
-//			}
-//			else
-//			{
-//				cloudOcrEngine.setLanguage(lang);
-//			}
-			Log.d(MainActivity.TAG, "getOcrEngine" + " network");
+			Log.d(MainActivity.TAG, "getOcrEngine" + " network" + " " + lang);
 			cloudOcrEngine = new CloudOcrEngine(currentActivity, lang);
 			return cloudOcrEngine;
 		}
