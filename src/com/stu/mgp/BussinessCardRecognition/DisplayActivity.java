@@ -167,10 +167,22 @@ public class DisplayActivity extends ActionBarActivity {
 			Toast.makeText(this, "二值化", Toast.LENGTH_LONG).show();
 			toBinarization();
 			break;
+		case R.id.resetImage:
+			Toast.makeText(this, "重设图像", Toast.LENGTH_LONG).show();
+			resetImage();
+			break;
 		default:
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void resetImage() {
+		File file = new File(MainActivity.appOcrPicturePath,
+				MainActivity.dateOfRecognition + ".jpg");
+		Log.d(MainActivity.TAG, "resetImage :" + file.getPath().toString());
+		MainActivity.ocrPicture = file;
+		refleshImage();
 	}
 
 	private void toRotate(double angle) {

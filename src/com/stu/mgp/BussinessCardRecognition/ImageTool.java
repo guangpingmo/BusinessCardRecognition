@@ -266,9 +266,50 @@ public class ImageTool {
 					+ " " + textRoi[i][1] + " " + textRoi[i][2] + " "
 					+ textRoi[i][3]);
 		}
+		
+		// save the text box
+		saveTextBox(matout_binary, matout_textROI);
 
 		return true;
 
+	}
+
+	private static void saveTextBox(Mat matout_binary, Mat matout_textROI) {
+		int numROI = matout_textROI.height();
+		int[][] textRoi = new int[numROI][4];
+		for (int i = 0; i < numROI; i++) {
+			for (int j = 0; j < 4; j++) {
+				double[] data = matout_textROI.get(i, j);
+				textRoi[i][j] = (int) (data[0]);
+			}
+			Log.d(MainActivity.TAG, "ROI " + i + ": " + textRoi[i][0] + " "
+					+ " " + textRoi[i][1] + " " + textRoi[i][2] + " "
+					+ textRoi[i][3]);
+		}
+
+		int height = matout_binary.rows();
+		int width = matout_binary.cols();
+		Bitmap rectifiedBitmap = Bitmap.createBitmap(width, height,
+				Bitmap.Config.ARGB_8888);
+		Utils.matToBitmap(matout_binary, rectifiedBitmap);
+
+		for (int i = 0; i < numROI; i++) {
+
+			Bitmap croppedBitmap = Bitmap.createBitmap(rectifiedBitmap,
+					textRoi[i][0], textRoi[i][1], textRoi[i][2], textRoi[i][3]);
+			Log.d(MainActivity.TAG, "output ROI " + (i + 1) + " of " + numROI);
+
+			try {
+				File outFile = new File(MainActivity.appImagePreprocessPath, MainActivity.dateOfRecognition + "-text_box_" + i + ".jpg");
+				FileOutputStream out = new FileOutputStream(outFile);
+				croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+				out.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			croppedBitmap.recycle();
+		}
 	}
 
 	// 把Mat保存为预处理路径的一个图像文件

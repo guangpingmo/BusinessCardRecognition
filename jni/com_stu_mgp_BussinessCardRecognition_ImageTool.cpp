@@ -33,6 +33,7 @@ float lineLength( Vec4i a )
     return sqrt(float((x1-x2)*(x1-x2)) + float((y1-y2)*(y1-y2)) );
 }
 
+// 点到直线的距离
 void findIntersectionLoc( Vec4i a, Point p, float& lambda, float& dist )
 {
     int x1 = a[0], y1 = a[1], x2 = a[2], y2 = a[3];
@@ -42,6 +43,7 @@ void findIntersectionLoc( Vec4i a, Point p, float& lambda, float& dist )
     dist = sqrt(dx*dx+dy*dy);
 }
 
+// 顺时针旋转点
 void sortPointsClockwise(Point a[])
 {
     Point b[4];
@@ -74,6 +76,7 @@ void sortPointsClockwise(Point a[])
 
 }
 
+// 计算在矩形的直线的交点
 Point computeIntersect(cv::Vec4i a, cv::Vec4i b, cv::Rect ROI)
 {
     int x1 = a[0], y1 = a[1], x2 = a[2], y2 = a[3];

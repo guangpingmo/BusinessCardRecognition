@@ -2,3 +2,6 @@ ocr.method=local
 ocr.language=eng
 abbyy.applicationId=MyStuBusinessCardRecognization
 abbyy.password=NsBR1MS65oG39WdOCqabjydU
+abbyy.applicationId.2=MyBusinessCardRecognizationWithOCR
+abbyy.password.2=UZBnXcd/kSrBeDw+xDjifYJZ
+
